@@ -396,6 +396,10 @@ const App = (() => {
       Ruang: get("f-ruang"),
       Dosen: get("f-dosen"),
       Warna: get("color-picker") || "#6366f1",
+      Hari2:    get("f-hari2"),
+      Mulai2:   get("f-mulai2"),
+      Selesai2: get("f-selesai2"),
+      Ruang2:   get("f-ruang2"),
     };
   }
 
@@ -530,6 +534,20 @@ const App = (() => {
       });
     });
 
+    // SKS Handler
+    document.getElementById("f-sks").addEventListener("change", e => {
+      const sks = Number(e.target.value);
+      const jadwal2 = document.getElementById("jadwal2-section");
+      const btnAdd  = document.getElementById("btn-add-jadwal2");
+      if (sks >= 4) {
+        jadwal2.classList.remove("hidden");
+        btnAdd.classList.add("hidden");
+      } else {
+        jadwal2.classList.add("hidden");
+        btnAdd.classList.remove("hidden");
+      }
+    });
+
     // Enter on form
     document.getElementById("course-form")?.addEventListener("keydown", e => {
       if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
@@ -599,18 +617,5 @@ const App = (() => {
 
   return { init, syncData, updateCourse, courses: () => courses };
 })();
-
-document.getElementById("f-sks").addEventListener("change", e => {
-  const sks = Number(e.target.value);
-  const jadwal2 = document.getElementById("jadwal2-section");
-  const btnAdd  = document.getElementById("btn-add-jadwal2");
-  if (sks >= 4) {
-    jadwal2.classList.remove("hidden");
-    btnAdd.classList.add("hidden");
-  } else {
-    jadwal2.classList.add("hidden");
-    btnAdd.classList.remove("hidden");
-  }
-});
 
 document.addEventListener("DOMContentLoaded", App.init);
