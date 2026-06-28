@@ -600,4 +600,17 @@ const App = (() => {
   return { init, syncData, updateCourse, courses: () => courses };
 })();
 
+document.getElementById("f-sks").addEventListener("change", e => {
+  const sks = Number(e.target.value);
+  const jadwal2 = document.getElementById("jadwal2-section");
+  const btnAdd  = document.getElementById("btn-add-jadwal2");
+  if (sks >= 4) {
+    jadwal2.classList.remove("hidden");
+    btnAdd.classList.add("hidden");
+  } else {
+    jadwal2.classList.add("hidden");
+    btnAdd.classList.remove("hidden");
+  }
+});
+
 document.addEventListener("DOMContentLoaded", App.init);
