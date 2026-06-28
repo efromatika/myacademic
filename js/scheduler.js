@@ -56,6 +56,29 @@ const Scheduler = (() => {
     return { top, height };
   }
 
+  // Render HTML
+  function renderBlock(course, slot, top, height) {
+    const hari    = slot === 1 ? course.Hari    : course.Hari2;
+    const mulai   = slot === 1 ? course.Mulai   : course.Mulai2;
+    const selesai = slot === 1 ? course.Selesai : course.Selesai2;
+    const ruang   = slot === 1 ? course.Ruang   : course.Ruang2;
+    return `
+          <div class="schedule-block"
+            style="top:${top}px;height:${height}px;background:${course.Warna || '#6366f1'};left:4px;right:4px;"
+            data-id="${course.ID}"
+            draggable="true">
+            <div class="schedule-block-inner">
+              <div class="block-nama">${course.Nama || course.Kode}</div>
+              <div class="block-info">${mulai}–${selesai}</div>
+              <div class="block-info">${ruang || ''}</div>
+            </div>
+            <div class="block-actions">
+              <button class="btn-edit-block" data-id="${course.ID}" title="Edit">✏️</button>
+              <button class="btn-del-block" data-id="${course.ID}" title="Hapus">🗑️</button>
+            </div>
+          </div>`;
+  }
+
   // Render grid jadwal ke dalam container
   function renderGrid(containerId, courses, onEdit, onDelete) {
     const container = document.getElementById(containerId);
@@ -82,22 +105,8 @@ const Scheduler = (() => {
       dayCourses.forEach(course => {
         const { top, height } = getBlockStyle(course);
         const isConflict = conflictIds.has(course.ID);
-        blocks += `
-          <div class="schedule-block ${isConflict ? 'conflict' : ''}"
-            style="top:${top}px;height:${height}px;background:${course.Warna || '#6366f1'};left:4px;right:4px;"
-            data-id="${course.ID}"
-            draggable="true">
-            <div class="schedule-block-inner">
-              <div class="block-nama">${course.Nama || course.Kode}</div>
-              <div class="block-info">${course.Mulai}–${course.Selesai}</div>
-              <div class="block-info">${course.Ruang || ''}</div>
-            </div>
-            <div class="block-actions">
-              <button class="btn-edit-block" data-id="${course.ID}" title="Edit">✏️</button>
-              <button class="btn-del-block" data-id="${course.ID}" title="Hapus">🗑️</button>
-            </div>
-            ${isConflict ? '<div class="conflict-badge">⚠️</div>' : ''}
-          </div>`;
+        if (course.Hari) blocks += renderBlock(course, 1, top, height);
+        if (course.Hari2) blocks += renderBlock(course, 2, top, height);
       });
 
       dayColumns += `
