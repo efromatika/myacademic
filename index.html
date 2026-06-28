@@ -400,6 +400,27 @@
             <input id="f-dosen" type="text" class="form-input text-sm" placeholder="Nama dosen" />
           </div>
         </div>
+        
+        <!-- Jadwal 2 — muncul jika SKS ≥ 4 atau diklik manual -->
+        <div id="jadwal2-section" class="hidden border-t pt-4">
+          <div class="flex justify-between items-center mb-3">
+            <p class="form-label">Jadwal 2</p>
+            <button id="btn-remove-jadwal2">✕ Hapus</button>
+          </div>
+          <select id="f-hari2" class="form-input text-sm">
+            <option value="">– Pilih hari –</option>
+            <option>Senin</option><option>Selasa</option><option>Rabu</option>
+            <option>Kamis</option><option>Jumat</option><option>Sabtu</option>
+          </select>
+          <input id="f-mulai2" type="time" />
+          <input id="f-selesai2" type="time" />
+          <input id="f-ruang2" placeholder="F205" />
+        </div>
+        
+        <!-- Tombol tambah jadwal 2 -->
+        <button id="btn-add-jadwal2" class="w-full border-dashed ...">
+          + Tambah Jadwal 2
+        </button>
 
         <!-- Color picker -->
         <div>
