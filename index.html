@@ -550,8 +550,159 @@
 <script src="js/scheduler.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/app.js"></script>
-
 <script>
+  function printSchedule() {
+    // Ambil konten jadwal
+    const scheduleEl = document.getElementById("schedule-container");
+    if (!scheduleEl) return;
+    // Buka jendela print baru
+    const win = window.open("", "_blank", "width=1200,height=800");
+    win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8"/>
+      <title>Jadwal Kuliah</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+          font-family: 'Inter', Arial, sans-serif;
+          font-size: 11px;
+          background: white;
+          color: #1e293b;
+          padding: 20px;
+        }
+
+        h1 {
+          text-align: center;
+          font-size: 16px;
+          font-weight: 700;
+          color: #4f46e5;
+          margin-bottom: 4px;
+        }
+
+        .subtitle {
+          text-align: center;
+          font-size: 10px;
+          color: #94a3b8;
+          margin-bottom: 16px;
+        }
+
+        /* Salin style grid jadwal */
+        .schedule-wrapper { display: flex; }
+
+        .schedule-time-col {
+          width: 44px;
+          flex-shrink: 0;
+        }
+
+        .schedule-time-label {
+          position: absolute;
+          right: 4px;
+          font-size: 9px;
+          color: #94a3b8;
+          transform: translateY(-50%);
+          white-space: nowrap;
+        }
+
+        .schedule-grid { display: flex; flex: 1; }
+
+        .schedule-day-col {
+          flex: 1;
+          border-left: 1px solid #e2e8f0;
+          min-width: 0;
+        }
+
+        .schedule-day-header {
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          font-weight: 700;
+          color: #6366f1;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          background: #f8f7ff;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .schedule-day-body { position: relative; overflow: hidden; }
+
+        .grid-line { position: absolute; left: 0; right: 0; }
+        .hour-line { border-top: 1px solid #e2e8f0; }
+        .half-line { border-top: 1px dashed #f1f5f9; }
+
+        .schedule-block {
+          position: absolute;
+          border-radius: 5px;
+          padding: 3px 5px;
+          overflow: hidden;
+          border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .block-nama {
+          font-size: 9px;
+          font-weight: 700;
+          color: white;
+          line-height: 1.2;
+        }
+
+        .block-info {
+          font-size: 8px;
+          color: rgba(255,255,255,0.85);
+          margin-top: 1px;
+        }
+
+        .block-tipe-badge, .block-slot-badge {
+          font-size: 7px;
+          font-weight: 800;
+          padding: 1px 3px;
+          border-radius: 3px;
+          background: rgba(255,255,255,0.25);
+          color: white;
+          display: inline-block;
+          margin-bottom: 1px;
+        }
+
+        .extra-block {
+          border-left: 3px dashed rgba(255,255,255,0.6) !important;
+        }
+
+        /* Sembunyikan tombol aksi */
+        .block-actions,
+        .conflict-badge { display: none !important; }
+
+        @media print {
+          body { padding: 10px; }
+          @page {
+            size: A4 landscape;
+            margin: 10mm;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Jadwal Kuliah</h1>
+      <div class="subtitle">Dicetak pada ${new Date().toLocaleDateString("id-ID", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric"
+      })}</div>
+      ${scheduleEl.innerHTML}
+    </body>
+    </html>
+  `);
+    win.document.close();
+    // Tunggu render selesai lalu trigger print → Save as PDF
+    win.onload = () => {
+      setTimeout(() => {
+        win.focus();
+        win.print();
+        win.close();
+      }, 300);
+    };
+  }
+
   // Color presets untuk modal Extra (target dinamis)
   document.querySelectorAll(".color-preset[data-color-target]").forEach(btn => {
     btn.addEventListener("click", () => {
