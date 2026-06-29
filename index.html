@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="id" class="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="Academic Planner – Manajemen Jadwal & Nilai Kuliah" />
+  <meta name="theme-color" content="#6366f1" />
+  <title>Academic Planner</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { sans: ['Inter','system-ui','sans-serif'] } } }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>body { font-family:'Inter',system-ui,sans-serif; }</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
+
+<!-- OFFLINE INDICATOR -->
+<div id="offline-indicator" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-500 text-white text-center text-sm py-1.5 font-medium">
+  ⚡ Mode Offline – Menampilkan data cache terakhir
+</div>
+
+<div class="flex h-screen overflow-hidden">
+
+  <!-- ======================================================
+       SIDEBAR (Desktop)
+       ====================================================== -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex flex-col
+           transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-5 h-16 border-b border-slate-100 dark:border-slate-800">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg">A</div>
+      <div><h1 class="text-sm font-bold text-slate-800 dark:text-white leading-tight">Academic</h1><p class="text-xs text-slate-400">Planner</p></div>
+    </div>
+
+    <!-- Nav Items -->
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <div class="nav-item active" data-page="dashboard">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-page="courses">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Mata Kuliah
+      </div>
+      <div class="nav-item" data-page="schedule">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Jadwal
+      </div>
+      <div class="nav-item" data-page="rekap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Rekap Akademik
+      </div>
+      <div class="nav-item" data-page="statistics">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Statistik
+      </div>
+    </nav>
+
+    <!-- Bottom sidebar -->
+    <div class="px-3 py-4 border-t border-slate-100 dark:border-slate-800 space-y-1">
+      <div class="flex items-center justify-between px-3 py-2">
+        <span class="text-xs text-slate-400" id="last-sync">–</span>
+        <button id="btn-sync" class="btn-secondary text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Sync
+        </button>
+      </div>
+      <button id="btn-theme" class="nav-item w-full text-left">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        Tema Gelap
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================
+       MAIN CONTENT
+       ====================================================== -->
+  <main class="flex-1 flex flex-col overflow-hidden lg:ml-64">
+
+    <!-- Top bar -->
+    <header class="h-14 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center px-4 gap-3 flex-shrink-0">
+      <button id="btn-menu" class="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h2 class="font-bold text-slate-800 dark:text-white flex-1">Dashboard</h2>
+      <div class="hidden lg:flex items-center gap-2">
+        <button id="btn-add-extra" class="btn-secondary text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Jadwal Tambahan
+        </button>
+        <button id="btn-add-course" class="btn-primary text-sm flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambah MK
+        </button>
+      </div>
+    </header>
+
+    <!-- Pages -->
+    <div class="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 lg:pb-6">
+
+      <!-- ====================================================
+           DASHBOARD
+           ==================================================== -->
+      <div id="page-dashboard" class="page-content">
+        <!-- Stat cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
+          <div class="stat-card glass-card rounded-2xl p-4 flex flex-col">
+            <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <p class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-total-mk">–</p>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">Mata Kuliah</p>
+          </div>
+          <div class="stat-card glass-card rounded-2xl p-4 flex flex-col">
+            <div class="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <p class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-total-sks">–</p>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">Total SKS</p>
+          </div>
+          <div class="stat-card glass-card rounded-2xl p-4 flex flex-col">
+            <div class="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <p class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-ips">–</p>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">IPS Aktif</p>
+          </div>
+          <div class="stat-card glass-card rounded-2xl p-4 flex flex-col">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-ipk">–</p>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">IPK</p>
+          </div>
+          <div class="stat-card glass-card rounded-2xl p-4 flex flex-col col-span-2 lg:col-span-1">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <p class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-bentrok">–</p>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">Slot Bentrok</p>
+          </div>
+        </div>
+
+        <!-- Semester aktif picker -->
+        <div class="glass-card rounded-2xl p-4 mb-4 flex items-center gap-3">
+          <span class="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">IPS semester:</span>
+          <select id="active-semester" class="form-input flex-1 max-w-xs text-sm">
+            <option value="1">Semester 1</option><option value="2">Semester 2</option>
+            <option value="3">Semester 3</option><option value="4">Semester 4</option>
+            <option value="5">Semester 5</option><option value="6">Semester 6</option>
+            <option value="7">Semester 7</option><option value="8">Semester 8</option>
+          </select>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="glass-card rounded-2xl p-5">
+            <h3 class="font-bold text-slate-800 dark:text-white mb-3 text-sm uppercase tracking-wide">Mata Kuliah Terbaru</h3>
+            <div id="recent-courses" class="space-y-1"></div>
+          </div>
+          <div class="glass-card rounded-2xl p-5">
+            <h3 class="font-bold text-slate-800 dark:text-white mb-3 text-sm uppercase tracking-wide">Status Jadwal</h3>
+            <div id="conflict-warning"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           COURSES
+           ==================================================== -->
+      <div id="page-courses" class="page-content hidden">
+        <!-- Toolbar -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-5">
+          <div class="flex-1 relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="search-input" type="text" placeholder="Cari nama, kode, dosen..." class="form-input pl-9 text-sm" />
+          </div>
+          <select id="filter-semester" class="form-input sm:w-44 text-sm">
+            <option value="all">Semua Semester</option>
+          </select>
+        </div>
+
+        <!-- Course cards -->
+        <div id="courses-list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 mb-6"></div>
+
+        <!-- Jadwal Tambahan section -->
+        <div class="section-header-extra">
+          <h3>🔬 Jadwal Tambahan</h3>
+          <button id="btn-add-extra-courses" class="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tambah
+          </button>
+        </div>
+        <div id="extra-events-list"></div>
+      </div>
+
+      <!-- ====================================================
+           SCHEDULE
+           ==================================================== -->
+      <div id="page-schedule" class="page-content hidden">
+        <div class="glass-card rounded-2xl overflow-hidden">
+
+          <!-- Toolbar: filter + print -->
+          <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-3">
+
+            <!-- Kiri: judul + filter semester -->
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+              <h3 class="font-bold text-slate-800 dark:text-white text-sm whitespace-nowrap">Jadwal Mingguan</h3>
+              <select id="schedule-filter-semester"
+                class="form-input text-xs py-1.5 px-3 rounded-xl w-auto min-w-[130px]">
+                <option value="all">Semua Semester</option>
+              </select>
+            </div>
+
+            <!-- Kanan: legend + tombol print -->
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="schedule-legend">
+                <div class="legend-item"><div class="legend-dot rounded" style="background:#6366f1"></div><span>Mata Kuliah</span></div>
+                <div class="legend-item"><div class="legend-dot dashed"></div><span>Jadwal Tambahan</span></div>
+                <div class="legend-item"><span>&#x26A0;&#xFE0F;</span><span>Bentrok</span></div>
+                <div class="legend-item text-slate-400 italic text-xs hidden sm:flex">Drag &amp; drop</div>
+              </div>
+
+              <!-- Tombol Print -->
+              <button id="btn-print-schedule"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold
+                       bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800
+                       text-white transition-colors shadow-sm whitespace-nowrap flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 6 2 18 2 18 9"/>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                  <rect x="6" y="14" width="12" height="8"/>
+                </svg>
+                Print PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Label semester aktif -->
+          <div id="schedule-semester-label" class="hidden px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-100 dark:border-indigo-800">
+            <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400" id="schedule-semester-label-text"></span>
+          </div>
+
+          <!-- Grid jadwal -->
+          <div id="schedule-container" class="overflow-x-auto bg-white dark:bg-slate-900" style="min-height:420px"></div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           REKAP
+           ==================================================== -->
+      <div id="page-rekap" class="page-content hidden">
+        <div id="rekap-container"></div>
+      </div>
+
+      <!-- ====================================================
+           STATISTICS
+           ==================================================== -->
+      <div id="page-statistics" class="page-content hidden">
+        <div class="grid gap-4">
+          <div class="glass-card rounded-2xl p-5">
+            <h3 class="font-bold text-slate-800 dark:text-white mb-1 text-sm">IPS per Semester</h3>
+            <p class="text-xs text-slate-400 mb-4">Indeks Prestasi tiap semester</p>
+            <div style="height:240px"><canvas id="ipsChart"></canvas></div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div class="glass-card rounded-2xl p-5">
+              <h3 class="font-bold text-slate-800 dark:text-white mb-1 text-sm">Distribusi Nilai</h3>
+              <p class="text-xs text-slate-400 mb-4">Sebaran nilai mata kuliah</p>
+              <div style="height:200px"><canvas id="gradeChart"></canvas></div>
+            </div>
+            <div class="glass-card rounded-2xl p-5">
+              <h3 class="font-bold text-slate-800 dark:text-white mb-1 text-sm">SKS per Semester</h3>
+              <p class="text-xs text-slate-400 mb-4">Beban studi tiap semester</p>
+              <div style="height:200px"><canvas id="sksChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page container -->
+  </main>
+</div>
+
+<!-- ======================================================
+     BOTTOM NAV (Mobile)
+     ====================================================== -->
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex items-center justify-around px-2 py-1 z-30 shadow-lg">
+  <div class="bottom-nav-item active" data-page="dashboard">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>Home</span>
+  </div>
+  <div class="bottom-nav-item" data-page="courses">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    <span>MK</span>
+  </div>
+  <div class="bottom-nav-item" data-page="schedule">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>Jadwal</span>
+  </div>
+  <div class="bottom-nav-item" data-page="rekap">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    <span>Rekap</span>
+  </div>
+  <div class="bottom-nav-item" data-page="statistics">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <span>Statistik</span>
+  </div>
+</nav>
+
+<!-- FAB (Mobile) -->
+<button id="btn-add-fab" class="lg:hidden" aria-label="Tambah Mata Kuliah">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+
+<!-- ======================================================
+     MODAL: MATA KULIAH
+     ====================================================== -->
+<div id="course-modal" class="modal-backdrop hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="modal-card glass-card w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl overflow-hidden flex flex-col max-h-[94vh]">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex-shrink-0">
+      <h2 class="font-bold text-slate-800 dark:text-white" id="modal-title">Tambah Mata Kuliah</h2>
+      <button class="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" data-close-modal="course-modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form id="course-form" class="overflow-y-auto flex-1 p-5 space-y-4" autocomplete="off">
+
+      <!-- Semester & SKS -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Semester *</label>
+          <select id="f-semester" class="form-input text-sm">
+            <option value="">Pilih</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+            <option value="7">7</option><option value="8">8</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">SKS *</label>
+          <input id="f-sks" type="number" min="1" max="6" class="form-input text-sm" placeholder="3" />
+        </div>
+      </div>
+
+      <!-- Nama (autocomplete) -->
+      <div class="relative">
+        <label class="form-label">Nama Mata Kuliah *</label>
+        <input id="f-nama" type="text" class="form-input text-sm" placeholder="Ketik untuk cari dari dataset…" />
+        <div id="autocomplete-dropdown" class="hidden mt-1"></div>
+      </div>
+
+      <!-- Kode -->
+      <div>
+        <label class="form-label">Kode MK</label>
+        <input id="f-kode" type="text" class="form-input text-sm" placeholder="MA1103" />
+      </div>
+
+      <!-- Nilai & Dosen -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Nilai</label>
+          <select id="f-nilai" class="form-input text-sm">
+            <option value="">– Belum –</option>
+            <option value="A">A (4.00)</option><option value="AB">AB (3.50)</option>
+            <option value="B">B (3.00)</option><option value="BC">BC (2.50)</option>
+            <option value="C">C (2.00)</option><option value="D">D (1.00)</option>
+            <option value="E">E (0.00)</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Dosen</label>
+          <input id="f-dosen" type="text" class="form-input text-sm" placeholder="Nama dosen" />
+        </div>
+      </div>
+
+      <!-- ── JADWAL 1 ── -->
+      <div class="border-t border-slate-100 dark:border-slate-700 pt-4">
+        <p class="form-label mb-3 text-indigo-500 dark:text-indigo-400">📅 Jadwal 1</p>
+        <div>
+          <label class="form-label">Hari</label>
+          <select id="f-hari" class="form-input text-sm">
+            <option value="">– Pilih hari –</option>
+            <option>Senin</option><option>Selasa</option><option>Rabu</option>
+            <option>Kamis</option><option>Jumat</option><option>Sabtu</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mt-3">
+          <div><label class="form-label">Mulai</label><input id="f-mulai"   type="time" class="form-input text-sm" /></div>
+          <div><label class="form-label">Selesai</label><input id="f-selesai" type="time" class="form-input text-sm" /></div>
+        </div>
+        <div class="mt-3">
+          <label class="form-label">Ruangan</label>
+          <input id="f-ruang" type="text" class="form-input text-sm" placeholder="Gedung / Ruang" />
+        </div>
+      </div>
+
+      <!-- ── TOMBOL TAMBAH JADWAL 2 ── -->
+      <button type="button" id="btn-add-jadwal2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Tambah Jadwal 2
+      </button>
+
+      <!-- ── JADWAL 2 ── (tersembunyi secara default) -->
+      <div id="jadwal2-section" class="hidden">
+        <div class="flex items-center justify-between mb-3">
+          <p class="form-label text-purple-500 dark:text-purple-400 mb-0">📅 Jadwal 2</p>
+          <button type="button" id="btn-remove-jadwal2">✕ Hapus Jadwal 2</button>
+        </div>
+        <div>
+          <label class="form-label">Hari</label>
+          <select id="f-hari2" class="form-input text-sm">
+            <option value="">– Pilih hari –</option>
+            <option>Senin</option><option>Selasa</option><option>Rabu</option>
+            <option>Kamis</option><option>Jumat</option><option>Sabtu</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mt-3">
+          <div><label class="form-label">Mulai</label><input id="f-mulai2"   type="time" class="form-input text-sm" /></div>
+          <div><label class="form-label">Selesai</label><input id="f-selesai2" type="time" class="form-input text-sm" /></div>
+        </div>
+        <div class="mt-3">
+          <label class="form-label">Ruangan</label>
+          <input id="f-ruang2" type="text" class="form-input text-sm" placeholder="Gedung / Ruang" />
+        </div>
+      </div>
+
+      <!-- Warna -->
+      <div class="border-t border-slate-100 dark:border-slate-700 pt-4">
+        <label class="form-label">Warna Blok</label>
+        <div class="flex items-center gap-2 flex-wrap">
+          <input id="color-picker" type="color" class="w-10 h-10 rounded-xl border-0 cursor-pointer bg-transparent" />
+          <div class="flex gap-1.5 flex-wrap">
+            <button type="button" class="color-preset" data-color="#6366f1" style="background:#6366f1"></button>
+            <button type="button" class="color-preset" data-color="#8b5cf6" style="background:#8b5cf6"></button>
+            <button type="button" class="color-preset" data-color="#ec4899" style="background:#ec4899"></button>
+            <button type="button" class="color-preset" data-color="#f43f5e" style="background:#f43f5e"></button>
+            <button type="button" class="color-preset" data-color="#f97316" style="background:#f97316"></button>
+            <button type="button" class="color-preset" data-color="#eab308" style="background:#eab308"></button>
+            <button type="button" class="color-preset" data-color="#22c55e" style="background:#22c55e"></button>
+            <button type="button" class="color-preset" data-color="#06b6d4" style="background:#06b6d4"></button>
+            <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6"></button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <div class="flex gap-3 px-5 py-4 border-t border-slate-100 dark:border-slate-700 flex-shrink-0">
+      <button class="flex-1 btn-secondary" data-close-modal="course-modal">Batal</button>
+      <button id="btn-save-course" class="flex-1 btn-primary">Simpan</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================================================
+     MODAL: JADWAL TAMBAHAN (Praktikum / Tutorial / dll)
+     ====================================================== -->
+<div id="extra-modal" class="modal-backdrop hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="modal-card glass-card w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl overflow-hidden flex flex-col max-h-[94vh]">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex-shrink-0">
+      <h2 class="font-bold text-slate-800 dark:text-white" id="extra-modal-title">Tambah Jadwal Tambahan</h2>
+      <button class="p-1.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" data-close-modal="extra-modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Info note -->
+    <div class="mx-5 mt-4 px-3 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-700 dark:text-emerald-400 flex items-start gap-2">
+      <span class="text-base leading-none mt-0.5">ℹ️</span>
+      <span>Jadwal ini <strong>tidak mempengaruhi IPK</strong>. Hanya tampil di grid jadwal sebagai kegiatan tambahan.</span>
+    </div>
+
+    <!-- Form -->
+    <form id="extra-form" class="overflow-y-auto flex-1 p-5 space-y-4" autocomplete="off">
+
+      <!-- Tipe -->
+      <div>
+        <label class="form-label">Tipe Kegiatan *</label>
+        <select id="ef-tipe" class="form-input text-sm">
+          <option value="Praktikum">🔬 Praktikum</option>
+          <option value="Tutorial">📖 Tutorial</option>
+          <option value="Kelas Tambahan">➕ Kelas Tambahan</option>
+        </select>
+      </div>
+
+      <!-- Terkait MK -->
+      <div>
+        <label class="form-label">Terkait Mata Kuliah</label>
+        <select id="ef-mkid" class="form-input text-sm">
+          <option value="">– Tidak terkait MK –</option>
+        </select>
+        <p class="text-xs text-slate-400 mt-1">Opsional — untuk asosiasi dengan MK tertentu</p>
+      </div>
+
+      <!-- Label -->
+      <div>
+        <label class="form-label">Label / Nama Kegiatan *</label>
+        <input id="ef-label" type="text" class="form-input text-sm" placeholder="mis. Praktikum Fisika Dasar, Tutorial MA1103" />
+      </div>
+
+      <!-- Hari -->
+      <div>
+        <label class="form-label">Hari *</label>
+        <select id="ef-hari" class="form-input text-sm">
+          <option value="">– Pilih hari –</option>
+          <option>Senin</option><option>Selasa</option><option>Rabu</option>
+          <option>Kamis</option><option>Jumat</option><option>Sabtu</option>
+        </select>
+      </div>
+
+      <!-- Jam -->
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="form-label">Mulai *</label><input id="ef-mulai"   type="time" class="form-input text-sm" /></div>
+        <div><label class="form-label">Selesai *</label><input id="ef-selesai" type="time" class="form-input text-sm" /></div>
+      </div>
+
+      <!-- Ruang & Pengajar -->
+      <div>
+        <label class="form-label">Ruangan</label>
+        <input id="ef-ruang" type="text" class="form-input text-sm" placeholder="Lab / Ruang" />
+      </div>
+      <div>
+        <label class="form-label">Pengajar / Asisten</label>
+        <input id="ef-pengajar" type="text" class="form-input text-sm" placeholder="Nama asisten / dosen" />
+      </div>
+
+      <!-- Warna -->
+      <div>
+        <label class="form-label">Warna Blok</label>
+        <div class="flex items-center gap-3">
+          <input id="ef-warna" type="color" class="w-10 h-10 rounded-xl border-0 cursor-pointer bg-transparent" value="#10b981" />
+          <div class="flex gap-1.5 flex-wrap">
+            <button type="button" class="color-preset" data-color-target="ef-warna" data-color="#10b981" style="background:#10b981"></button>
+            <button type="button" class="color-preset" data-color-target="ef-warna" data-color="#f59e0b" style="background:#f59e0b"></button>
+            <button type="button" class="color-preset" data-color-target="ef-warna" data-color="#06b6d4" style="background:#06b6d4"></button>
+            <button type="button" class="color-preset" data-color-target="ef-warna" data-color="#8b5cf6" style="background:#8b5cf6"></button>
+            <button type="button" class="color-preset" data-color-target="ef-warna" data-color="#ef4444" style="background:#ef4444"></button>
+            <button type="button" class="color-preset" data-color-target="ef-warna" data-color="#f97316" style="background:#f97316"></button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <div class="flex gap-3 px-5 py-4 border-t border-slate-100 dark:border-slate-700 flex-shrink-0">
+      <button class="flex-1 btn-secondary" data-close-modal="extra-modal">Batal</button>
+      <button id="btn-save-extra" class="flex-1 btn-primary" style="background:linear-gradient(135deg,#10b981,#059669)">Simpan</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Scripts -->
+<script src="js/storage.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/scheduler.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+  // Color presets untuk modal Extra (target dinamis)
+  document.querySelectorAll(".color-preset[data-color-target]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.getElementById(btn.dataset.colorTarget).value = btn.dataset.color;
+    });
+  });
+  // Tombol extra di halaman courses
+  document.getElementById("btn-add-extra-courses")?.addEventListener("click", () => document.getElementById("btn-add-extra")?.click());
+    App && App.init && undefined; // App sudah di-init
+    document.getElementById("btn-add-extra")?.click();
+  });
+</script>
+
+<script>
+// ============================================================
+// PRINT SCHEDULE
+// ============================================================
+function printSchedule() {
+  const scheduleEl = document.getElementById("schedule-container");
+  if (!scheduleEl) return;
+
+  // Ambil info semester yang sedang aktif
+  const sel       = document.getElementById("schedule-filter-semester");
+  const semVal    = sel ? sel.value : "all";
+  const semLabel  = sel && semVal !== "all"
+    ? "Semester " + semVal
+    : "Semua Semester";
+
+  const tanggal = new Date().toLocaleDateString("id-ID", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric"
+  });
+
+  const win = window.open("", "_blank", "width=1400,height=900");
+  if (!win) { alert("Popup diblokir browser. Izinkan popup untuk halaman ini."); return; }
+
+  win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Jadwal Kuliah — ${semLabel}</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      background: white;
+      color: #1e293b;
+      padding: 16px 20px 20px;
+    }
+
+    /* ── Header ── */
+    .print-header { text-align:center; margin-bottom:14px; }
+    .print-header h1 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #4f46e5;
+      letter-spacing: -0.3px;
+    }
+    .print-header .sem-badge {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 2px 12px;
+      border-radius: 20px;
+      background: #ede9fe;
+      color: #4f46e5;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .print-header .tanggal {
+      margin-top: 3px;
+      font-size: 9px;
+      color: #94a3b8;
+    }
+
+    /* ── Grid ── */
+    .schedule-wrapper { display:flex; }
+
+    .schedule-time-col {
+      width: 40px;
+      flex-shrink: 0;
+    }
+
+    .schedule-time-label {
+      position: absolute;
+      right: 3px;
+      font-size: 8px;
+      color: #94a3b8;
+      transform: translateY(-50%);
+      white-space: nowrap;
+    }
+
+    .schedule-grid { display:flex; flex:1; }
+
+    .schedule-day-col {
+      flex: 1;
+      border-left: 1px solid #e2e8f0;
+      min-width: 0;
+    }
+
+    .schedule-day-header {
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 800;
+      color: #4f46e5;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #f5f3ff;
+      border-bottom: 2px solid #c7d2fe;
+    }
+
+    .schedule-day-body { position:relative; overflow:hidden; }
+
+    .grid-line { position:absolute; left:0; right:0; pointer-events:none; }
+    .hour-line { border-top: 1px solid #e2e8f0; }
+    .half-line { border-top: 1px dashed #f1f5f9; }
+
+    .schedule-block {
+      position: absolute;
+      border-radius: 4px;
+      padding: 3px 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.35);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .extra-block {
+      border-left: 3px dashed rgba(255,255,255,0.55) !important;
+    }
+
+    .block-nama {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .block-info {
+      font-size: 7.5px;
+      color: rgba(255,255,255,0.88);
+      margin-top: 1px;
+      line-height: 1.2;
+    }
+
+    .block-slot-badge, .block-tipe-badge {
+      display: inline-block;
+      font-size: 6.5px;
+      font-weight: 800;
+      padding: 1px 3px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.28);
+      color: white;
+      margin-bottom: 1px;
+    }
+
+    /* Sembunyikan elemen interaktif */
+    .block-actions,
+    .conflict-badge { display:none !important; }
+
+    /* ── Legenda ── */
+    .print-legend {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 8.5px;
+      color: #64748b;
+      flex-wrap: wrap;
+    }
+    .legend-item { display:flex; align-items:center; gap:4px; }
+    .legend-dot  { width:9px; height:9px; border-radius:2px; }
+    .legend-dot.dashed { border:2px dashed #10b981; background:transparent; }
+
+    @page { size: A4 landscape; margin: 10mm; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <div class="print-header">
+    <h1>Jadwal Kuliah</h1>
+    <div class="sem-badge">${semLabel}</div>
+    <div class="tanggal">Dicetak pada ${tanggal}</div>
+  </div>
+
+  ${scheduleEl.innerHTML}
+
+  <div class="print-legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#6366f1"></div>
+      <span>Mata Kuliah</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot dashed"></div>
+      <span>Jadwal Tambahan (Praktikum/Tutorial/Kelas Tambahan)</span>
+    </div>
+    <div class="legend-item"><span>⚠️</span><span>Bentrok Jadwal</span></div>
+  </div>
+</body>
+</html>`);
+
+  win.document.close();
+  win.onload = () => setTimeout(() => { win.focus(); win.print(); }, 400);
+}
+</script>
+
+</body>
+</html>
