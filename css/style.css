@@ -1,0 +1,606 @@
+/* ============================================================
+   Academic Planner - Custom CSS
+   ============================================================ */
+
+/* Glass morphism */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.dark .glass-card {
+  background: rgba(30, 27, 75, 0.75);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth page transitions */
+.page-content {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast animation */
+.toast-item {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================================
+   SCHEDULE GRID
+   ============================================================ */
+
+.schedule-wrapper {
+  display: flex;
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.schedule-time-col {
+  width: 52px;
+  flex-shrink: 0;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: var(--bg-base);
+}
+
+.dark .schedule-time-col {
+  background: #0f172a;
+}
+
+.schedule-time-label {
+  position: absolute;
+  right: 8px;
+  font-size: 10px;
+  color: #94a3b8;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.schedule-grid {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.schedule-day-col {
+  flex: 1;
+  min-width: 100px;
+  border-left: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.schedule-day-header {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6366f1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(99, 102, 241, 0.04);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.dark .schedule-day-header {
+  background: rgba(99, 102, 241, 0.08);
+  color: #818cf8;
+}
+
+.schedule-day-body {
+  overflow: hidden;
+}
+
+.grid-line {
+  position: absolute;
+  left: 0; right: 0;
+  pointer-events: none;
+}
+
+.hour-line {
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.half-line {
+  border-top: 1px dashed rgba(148, 163, 184, 0.1);
+}
+
+.schedule-block {
+  position: absolute;
+  border-radius: 8px;
+  padding: 4px 6px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.15s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.schedule-block:hover {
+  transform: scale(1.02);
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.schedule-block.conflict {
+  border: 2px solid #fbbf24;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3);
+}
+
+.schedule-block-inner { color: white; }
+.block-nama { font-size: 11px; font-weight: 700; line-height: 1.2; }
+.block-info { font-size: 9px; opacity: 0.85; margin-top: 1px; }
+
+.block-actions {
+  position: absolute;
+  top: 2px; right: 2px;
+  display: none;
+  gap: 2px;
+}
+
+.schedule-block:hover .block-actions { display: flex; }
+
+.btn-edit-block, .btn-del-block {
+  background: rgba(255,255,255,0.25);
+  border: none;
+  border-radius: 4px;
+  font-size: 10px;
+  padding: 2px 4px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+.btn-edit-block:hover { background: rgba(255,255,255,0.4); }
+.btn-del-block:hover { background: rgba(239,68,68,0.5); }
+
+.conflict-badge {
+  position: absolute;
+  bottom: 2px; right: 2px;
+  font-size: 10px;
+}
+
+.schedule-day-body.drag-over {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-item:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: #6366f1;
+}
+
+.nav-item.active {
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.dark .nav-item { color: #94a3b8; }
+.dark .nav-item:hover { color: #818cf8; background: rgba(99,102,241,0.12); }
+.dark .nav-item.active { color: #818cf8; background: rgba(99,102,241,0.18); }
+
+/* Bottom nav */
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all 0.15s ease;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.bottom-nav-item.active {
+  color: #6366f1;
+}
+
+.dark .bottom-nav-item.active { color: #818cf8; }
+
+/* ============================================================
+   AUTOCOMPLETE
+   ============================================================ */
+
+#autocomplete-dropdown {
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 50;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  background: white;
+  border: 1px solid rgba(99,102,241,0.15);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dark #autocomplete-dropdown {
+  background: #1e1b4b;
+  border-color: rgba(99,102,241,0.25);
+}
+
+/* ============================================================
+   STAT CARDS
+   ============================================================ */
+
+.stat-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+
+.dark .stat-card {
+  background: rgba(30, 27, 75, 0.8);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: 0.08;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+.modal-backdrop { animation: backdropIn 0.2s ease; }
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-card { animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(148, 163, 184, 0.3);
+  font-size: 14px;
+  background: white;
+  color: #1e293b;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+
+.dark .form-input {
+  background: rgba(15,23,42,0.6);
+  color: #e2e8f0;
+  border-color: rgba(99,102,241,0.2);
+}
+
+.dark .form-input:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129,140,248,0.15);
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dark .form-label { color: #94a3b8; }
+
+/* ============================================================
+   BUTTON
+   ============================================================ */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: rgba(99,102,241,0.08);
+  color: #6366f1;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover { background: rgba(99,102,241,0.15); }
+.dark .btn-secondary { color: #818cf8; background: rgba(99,102,241,0.12); }
+.dark .btn-secondary:hover { background: rgba(99,102,241,0.2); }
+
+/* FAB */
+#btn-add-fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+  transition: all 0.2s ease;
+  z-index: 30;
+}
+
+#btn-add-fab:hover {
+  transform: scale(1.08) rotate(90deg);
+  box-shadow: 0 12px 32px rgba(99,102,241,0.5);
+}
+
+@media (min-width: 1024px) {
+  #btn-add-fab { bottom: 24px; right: 24px; }
+}
+
+/* ============================================================
+   COLOR PRESETS
+   ============================================================ */
+
+.color-preset {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.color-preset:hover { transform: scale(1.2); border-color: white; }
+
+/* ============================================================
+   OFFLINE INDICATOR
+   ============================================================ */
+
+#offline-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ============================================================
+   RESPONSIVE TABLE
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .schedule-day-col { min-width: 80px; }
+  .block-nama { font-size: 9px; }
+  .block-info { display: none; }
+}
+
+/* ============================================================
+   JADWAL 2 & EXTRA BLOCKS
+   ============================================================ */
+
+/* Badge "Jadwal 2" di dalam blok MK */
+.block-slot-badge {
+  display: inline-block;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.3);
+  color: white;
+  margin-left: 4px;
+  vertical-align: middle;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Badge tipe (Praktikum / Tutorial / Kelas Tambahan) */
+.block-tipe-badge {
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.25);
+  color: white;
+  display: inline-block;
+  margin-bottom: 2px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Blok Extra: border kiri putus-putus agar mudah dibedakan dari MK */
+.extra-block {
+  border-left: 3px dashed rgba(255,255,255,0.6) !important;
+}
+
+/* ── Jadwal 2 section di form modal ── */
+#jadwal2-section {
+  border-top: 1.5px dashed rgba(99,102,241,0.3);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+#btn-add-jadwal2 {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 9px 0;
+  border: 1.5px dashed rgba(99,102,241,0.4);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6366f1;
+  background: rgba(99,102,241,0.04);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+#btn-add-jadwal2:hover {
+  background: rgba(99,102,241,0.1);
+  border-color: #6366f1;
+}
+
+.dark #btn-add-jadwal2 {
+  color: #818cf8;
+  border-color: rgba(129,140,248,0.3);
+  background: rgba(99,102,241,0.06);
+}
+.dark #btn-add-jadwal2:hover {
+  background: rgba(99,102,241,0.14);
+}
+
+#btn-remove-jadwal2 {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#btn-remove-jadwal2:hover { background: rgba(239,68,68,0.2); }
+
+/* ── Extra events list di halaman Courses ── */
+#extra-events-list .glass-card {
+  border-left: 3px solid transparent;
+}
+
+/* ── Tab / pill "Jadwal Tambahan" section header ── */
+.section-header-extra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(148,163,184,0.15);
+}
+
+.section-header-extra h3 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #10b981;
+}
+
+.dark .section-header-extra h3 { color: #34d399; }
+
+/* ── Legend di halaman Schedule ── */
+.schedule-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.legend-dot.dashed {
+  border: 2px dashed #10b981;
+  background: transparent;
+}
