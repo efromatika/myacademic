@@ -4,7 +4,7 @@
 //
 // FIX: sanitizeTime() membersihkan nilai waktu yang mungkin
 // datang sebagai ISO string "1899-12-30T05:52:48.000Z" atau
-// angka desimal dari Google Sheets, memastikan selalu "HH:MM".
+// angka desimal dari Google Sheets, memastikan selalu "HH:MM"
 // ============================================================
 
 const API_URL = "https://script.google.com/macros/s/AKfycbwdDQMEheAWIzd_k1DsLspz6CwBFrFb5wlMUFGNVGokNZ27WSu_ohcQ4qTtace_6Mdc/exec"; // ← Ganti dengan URL Anda
