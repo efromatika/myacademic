@@ -2,7 +2,7 @@
 // api.js - Modul komunikasi dengan Google Apps Script
 // ============================================================
 
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL"; // ← Ganti dengan URL Anda
+const API_URL = "https://script.google.com/macros/s/AKfycbxINj6tkEOzKSKTcCG7HdBUWB9w-Cnp4aSau4yyyH5HFMsxExgetT84LghAXi8lrDJ9/exec"; // ← Ganti dengan URL Anda
 
 const Api = (() => {
   const TIMEOUT_MS = 15000;
