@@ -7,7 +7,7 @@
 // angka desimal dari Google Sheets, memastikan selalu "HH:MM".
 // ============================================================
 
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL"; // ← Ganti dengan URL Anda
+const API_URL = "https://script.google.com/macros/s/AKfycbwdDQMEheAWIzd_k1DsLspz6CwBFrFb5wlMUFGNVGokNZ27WSu_ohcQ4qTtace_6Mdc/exec"; // ← Ganti dengan URL Anda
 
 // ── Kolom waktu yang perlu disanitasi ─────────────────────
 const MK_TIME_FIELDS    = ["Mulai","Selesai","Mulai2","Selesai2"];
